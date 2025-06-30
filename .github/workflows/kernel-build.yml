@@ -1,0 +1,54 @@
+# https://github.com/marketplace/actions/android-kernel-build-action
+name: Build Android kernel
+on:
+  workflow_dispatch:
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_SRC: ${{ github.workspace }}/build/
+      KERNEL_SRC: ${{ github.workspace }}/kernel/
+    steps:
+      # Setup build scripts and toolchain
+      - run: sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev
+      - uses: hendrikmuhs/ccache-action@v1.2
+      - name: Checkout build scripts
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.BUILD_SRC }}
+      - name: Setup environment variables
+        run: cat ${{ env.BUILD_SRC }}/builder.cfg >> $GITHUB_ENV
+      - name: Restore toolchain
+        id: restore-toolchain
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.BUILD_SRC }}/toolchain
+          key: toolchain-${{ env.CLANG_PREBUILT }}
+      - name: Setup toolchain
+        if: steps.restore-toolchain.outputs.cache-hit != 'true'
+        id: setup-toolchain
+        run: |
+          cd ${{ env.BUILD_SRC }}
+          ./setup-toolchain.sh
+      - name: Save toolchain
+        if: steps.setup-toolchain.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.BUILD_SRC }}/toolchain
+          key: toolchain-${{ env.CLANG_PREBUILT }}
+      # Fetch kernel sources and build them
+      - name: Checkout kernel sources
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.KERNEL_SRC }}
+          repository: zatrit/sdm845-mainline-android
+      - name: Build kernel
+        run: |
+          cd ${{ env.BUILD_SRC }}
+          ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }}
+      - run: ls ${{ env.BUILD_SRC }}/out >> $GITHUB_STEP_SUMMARY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Image-sdm845-mainline
+          path: ${{ env.BUILD_SRC }}/out/arch/arm64/boot/Image
