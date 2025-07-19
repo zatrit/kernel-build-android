@@ -1,4 +1,3 @@
-# https://github.com/marketplace/actions/android-kernel-build-action
 name: Build Android kernel
 on:
   workflow_dispatch:
@@ -46,11 +45,11 @@ jobs:
       - name: Build kernel
         run: |
           cd ${{ env.BUILD_SRC }}
-          ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
+          ./build.sh beryllium_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
       - uses: actions/upload-artifact@v4
         with:
-          name: kernel-sdm845-mainline
+          name: kernel-beryllium-mainline
           path: |
             ${{ env.BUILD_SRC }}/out/arch/arm64/boot/Image.gz
-            ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/sdm845-*.dtb
-            ${{ env.BUILD_SRC }}/out/modules
+            ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-*.dtb
+            ${{ env.BUILD_SRC }}/modules

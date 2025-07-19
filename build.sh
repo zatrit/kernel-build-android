@@ -45,4 +45,4 @@ cp "$CONFIG_DIR/$config_name" "$OUTPUT_DIR/.config"
 
 make $build_env olddefconfig
 make $build_env CC="$cc" CXX="$cxx" Image.gz modules dtbs "$@"
-make $build_env INSTALL_MOD_PATH="$OUTPUT_DIR/modules" modules_install
+make $build_env INSTALL_MOD_PATH="$MODULES_DIR" modules_install
