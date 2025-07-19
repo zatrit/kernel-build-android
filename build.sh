@@ -44,4 +44,5 @@ make $build_env mrproper
 cp "$CONFIG_DIR/$config_name" "$OUTPUT_DIR/.config"
 
 make $build_env olddefconfig
-make $build_env CC="$cc" CXX="$cxx" "$@"
+make $build_env CC="$cc" CXX="$cxx" Image.gz modules dtbs "$@"
+make $build_env INSTALL_MOD_PATH="$OUTPUT_DIR/out/modules" modules_install "$@"
