@@ -46,6 +46,7 @@ jobs:
         run: |
           cd ${{ env.BUILD_SRC }}
           ./build.sh beryllium_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
+          rm -rf ${{ env.BUILD_SRC }}/modules/lib/modules/*/build
       - uses: actions/upload-artifact@v4
         with:
           name: kernel-beryllium-mainline
