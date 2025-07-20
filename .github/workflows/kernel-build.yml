@@ -45,12 +45,12 @@ jobs:
       - name: Build kernel
         run: |
           cd ${{ env.BUILD_SRC }}
-          ./build.sh beryllium_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
+          ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
           rm -rf ${{ env.BUILD_SRC }}/modules/lib/modules/*/build
       - uses: actions/upload-artifact@v4
         with:
-          name: kernel-beryllium-mainline
+          name: kernel-sdm845-mainline
           path: |
             ${{ env.BUILD_SRC }}/out/arch/arm64/boot/Image.gz
-            ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-*.dtb
+            ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/sdm845-*.dtb
             ${{ env.BUILD_SRC }}/modules
