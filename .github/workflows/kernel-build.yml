@@ -52,5 +52,5 @@ jobs:
           name: kernel-sdm845-mainline
           path: |
             ${{ env.BUILD_SRC }}/out/arch/arm64/boot/Image.gz
-            ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/sdm845-*.dtb
+            ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/*.dtb
             ${{ env.BUILD_SRC }}/modules
