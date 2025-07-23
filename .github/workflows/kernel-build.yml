@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.KERNEL_SRC }}
-          repository: zatrit/sdm845-mainline-android
+          repository: zatrit/android_kernel_sdm845_mainline
       - name: Build kernel
         run: |
           cd ${{ env.BUILD_SRC }}
