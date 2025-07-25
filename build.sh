@@ -20,12 +20,19 @@ sources_dir="$2"
 if [ -z "$config_name" ] || [ -z "$sources_dir" ]; then
   error "Usage: $0 [config name] [sources dir]"
 fi
-
 if [ ! -d "$sources_dir" ]; then
   error "ERROR: kernel sources directory not found"
 fi
 
 shift 2
+
+# Use reproduce-friendly variables for the build
+if [ "$REPRODUCIBLE" = true ]; then
+  pwd_=$PWD
+  cd "$sources_dir"
+  . $pwd_/repro.sh
+  cd $pwd_
+fi
 
 cd "$sources_dir"
 
@@ -44,6 +51,8 @@ make $build_env mrproper
 
 cp "$CONFIG_DIR/$config_name" "$OUTPUT_DIR/.config"
 
+export KCFLAGS KBUILD_BUILD_HOST KBUILD_BUILD_USER KBUILD_BUILD_TIMESTAMP
+
 make $build_env olddefconfig
-make $build_env CC="$cc" CXX="$cxx" KCFLAGS="$KCFLAGS" Image.gz modules $DTBS "$@"
+make $build_env CC="$cc" CXX="$cxx" Image.gz modules $DTBS "$@"
 make $build_env INSTALL_MOD_PATH="$MODULES_DIR" modules_install
