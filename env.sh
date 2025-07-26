@@ -22,7 +22,6 @@ case "$(uname)" in
 esac
 
 OUTPUT_DIR="$PWD/out"
-MODULES_DIR="$PWD/modules"
 CONFIG_DIR="$PWD/config"
 TOOLCHAIN_DIR="$PWD/toolchain/$PLATFORM"
 
