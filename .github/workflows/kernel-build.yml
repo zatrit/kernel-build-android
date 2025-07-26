@@ -11,6 +11,11 @@ jobs:
     steps:
       # Setup build scripts and toolchain
       - run: sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+      - run: pip install -U tuxmake
       - uses: hendrikmuhs/ccache-action@v1.2
       - name: Checkout build scripts
         uses: actions/checkout@v4
@@ -51,6 +56,7 @@ jobs:
         with:
           name: kernel-sdm845-mainline
           path: |
+            ${{ env.BUILD_SRC }}/out/vmlinux
             ${{ env.BUILD_SRC }}/out/arch/arm64/boot/Image.gz
             ${{ env.BUILD_SRC }}/out/arch/arm64/boot/dts/qcom/*.dtb
             ${{ env.BUILD_SRC }}/modules
