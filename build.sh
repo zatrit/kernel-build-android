@@ -37,8 +37,8 @@ tuxmake -C $sources_dir \
   --output-dir $OUTPUT_DIR \
   --jobs $(nproc) \
   -e LLVM=1 \
-  -e LLVM_IAS=1 \
   -e KCFLAGS="$KCFLAGS" \
+  -e KAFLAGS="$KAFLAGS" \
   -e KBUILD_BUILD_HOST="$KBUILD_BUILD_HOST" \
   -e KBUILD_BUILD_USER="$KBUILD_BUILD_USER" \
   -e KBUILD_BUILD_TIMESTAMP="$KBUILD_BUILD_TIMESTAMP" \
