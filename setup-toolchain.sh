@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 . "./env.sh"
 
 tmp_dir=$(mktemp -d)
@@ -20,13 +20,14 @@ cleanup() {
 download_clang() {
   echo "Downloading $clang_name to $tmp_dir"
   prebuilt_url="https://android.googlesource.com/platform/prebuilts/clang/host/$PLATFORM/+archive/refs/heads/$AOSP_BRANCH.tar.gz"
-  curl -Lf $prebuilt_url | tar xzf - -C "$tmp_dir" "$clang_name"
+  curl -Lf "$prebuilt_url" | tar xzf - -C "$tmp_dir" "$clang_name"
   mv "$tmp_dir/$clang_name" "$CLANG_DIR"
 }
 
 trap cleanup EXIT
 
 mkdir -p "$TOOLCHAIN_DIR"
+
 if [ ! -d "$CLANG_DIR" ]; then
   download_clang
   echo "$clang_name installed to $CLANG_DIR"

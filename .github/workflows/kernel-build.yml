@@ -18,8 +18,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.BUILD_SRC }}
-      - name: Setup environment variables
-        run: cat ${{ env.BUILD_SRC }}/builder.cfg >> $GITHUB_ENV
+      - name: Create toolchain hashing key
+        run: |
+          . "builder.cfg"
+          echo "TOOLCHAIN_KEY=$CLANG_PREBUILT" >> $GITHUB_ENV
       # Install dependencies
       - run: sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev ccache socat
       - uses: actions/setup-python@v5
@@ -34,7 +36,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.BUILD_SRC }}/toolchain
-          key: toolchain-${{ env.CLANG_PREBUILT }}
+          key: toolchain-${{ env.TOOLCHAIN_KEY }}
       - name: Setup toolchain
         if: steps.restore-toolchain.outputs.cache-hit != 'true'
         id: setup-toolchain
@@ -44,7 +46,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ env.BUILD_SRC }}/toolchain
-          key: toolchain-${{ env.CLANG_PREBUILT }}
+          key: toolchain-${{ env.TOOLCHAIN_KEY }}
       # Restore build cache
       - uses: actions/cache@v4
         with:
@@ -59,7 +61,7 @@ jobs:
           path: ${{ env.KERNEL_SRC }}
           repository: zatrit/android_kernel_sdm845_mainline
       - name: Build kernel
-        run: ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} --wrapper ccache
+        run: ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} --wrapper ccache --quiet
       - uses: actions/upload-artifact@v4
         with:
           name: kernel-sdm845-mainline

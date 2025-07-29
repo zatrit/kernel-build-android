@@ -10,9 +10,6 @@ error() {
 }
 
 case "$(uname)" in
-  Darwin*)
-    PLATFORM="darwin-x86"
-    ;;
   Linux*)
     PLATFORM="linux-x86"
     ;;
@@ -24,5 +21,8 @@ esac
 OUTPUT_DIR="$PWD/out"
 CONFIG_DIR="$PWD/config"
 TOOLCHAIN_DIR="$PWD/toolchain/$PLATFORM"
-
 CLANG_DIR="$TOOLCHAIN_DIR/clang-$CLANG_PREBUILT"
+
+if [ -d "$CLANG_DIR" ]; then
+  export PATH="$CLANG_DIR/bin/:$PATH"
+fi
