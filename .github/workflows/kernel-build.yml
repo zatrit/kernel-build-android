@@ -54,6 +54,7 @@ jobs:
           key: ccache-${{ github.run_id }}
           restore-keys: |
             ccache-
+      - run: ccache --zero-stats
       # Fetch kernel sources and build them
       - name: Checkout kernel sources
         uses: actions/checkout@v4
@@ -62,7 +63,13 @@ jobs:
           repository: zatrit/android_kernel_sdm845_mainline
       - name: Build kernel
         run: ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} --wrapper ccache --quiet --fail-fast
+      # Post-build stuff
       - uses: actions/upload-artifact@v4
         with:
           name: kernel-sdm845-mainline
           path: ${{ env.BUILD_SRC }}/out/*
+      - name: Clean up ccache
+        run: |
+          ccache -M 200MiB
+          ccache --cleanup
+          ccache -s >> $GITHUB_STEP_SUMMARY
