@@ -41,7 +41,6 @@ export TUXMAKE="
   --compression-type none
   --kconfig 'config/$config_name'
   --output-dir '$OUTPUT_DIR'
-  --fail-fast
   --jobs $(nproc)
   -e ZERO_AR_DATE=1
   -e LC_ALL=C

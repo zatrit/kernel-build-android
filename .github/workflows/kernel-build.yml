@@ -61,7 +61,7 @@ jobs:
           path: ${{ env.KERNEL_SRC }}
           repository: zatrit/android_kernel_sdm845_mainline
       - name: Build kernel
-        run: ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} --wrapper ccache --quiet
+        run: ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} --wrapper ccache --quiet --fail-fast
       - uses: actions/upload-artifact@v4
         with:
           name: kernel-sdm845-mainline
