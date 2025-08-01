@@ -9,20 +9,12 @@ error() {
   exit 1
 }
 
-case "$(uname)" in
-  Linux*)
-    PLATFORM="linux-x86"
-    ;;
-  *)
-    error "ERROR: Unsupported platform: $(uname)"
-    ;;
-esac
-
 OUTPUT_DIR="$PWD/out"
 CONFIG_DIR="$PWD/config"
-TOOLCHAIN_DIR="$PWD/toolchain/$PLATFORM"
-CLANG_DIR="$TOOLCHAIN_DIR/clang-$CLANG_PREBUILT"
+TOOLCHAIN_DIR="$PWD/toolchain/"
+LLVM_NAME="llvm-$LLVM_PREBUILT-$(uname -m)"
+LLVM_DIR="$TOOLCHAIN_DIR/$LLVM_NAME"
 
-if [ -d "$CLANG_DIR" ]; then
-  export PATH="$CLANG_DIR/bin/:$PATH"
+if [ -d "$LLVM_DIR/bin/" ]; then
+  export PATH="$LLVM_DIR/bin/:$PATH"
 fi

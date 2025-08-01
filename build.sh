@@ -3,7 +3,7 @@
 set -e
 . "./env.sh"
 
-if [ ! -d "$CLANG_DIR" ]; then
+if [ ! -d "$LLVM_DIR" ]; then
   error "ERROR: toolchain is not installed. Use './setup-toolchain.sh'"
 fi
 
@@ -37,7 +37,7 @@ export TUXMAKE="
   -C '$sources_dir'
   --runtime null
   --target-arch arm64
-  --toolchain llvm-android
+  --toolchain korg-llvm
   --compression-type none
   --kconfig 'config/$config_name'
   --output-dir '$OUTPUT_DIR'
