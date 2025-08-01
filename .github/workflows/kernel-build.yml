@@ -21,9 +21,9 @@ jobs:
       - name: Create toolchain hashing key
         run: |
           . "builder.cfg"
-          echo "TOOLCHAIN_KEY=$LLVM_PREBUILT" >> $GITHUB_ENV
+          echo "TOOLCHAIN_KEY=$LLVM_VER" >> $GITHUB_ENV
       # Install dependencies
-      - run: sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev ccache socat
+      - run: sudo apt install -y build-essential bison flex ccache
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
