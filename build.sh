@@ -19,40 +19,45 @@ fi
 
 shift 2
 
-if [ -n "$BUILD_DIR" ]; then
-  build_dir=--build-dir="$BUILD_DIR"
+if [ -z "$BUILD_DIR" ]; then
+  BUILD_DIR=$(mktemp -d)
+  remove_build_dir=1
 fi
-extra_args="$build_dir $@"
 
-# Obtain the commit info
+cleanup() {
+  echo "Cleaning up..."
+  [ "$remove_build_dir" = 1 ] && rm -rf "$BUILD_DIR"
+}
+trap cleanup EXIT
+
+mkdir -p "$BUILD_DIR"
+cp "config/$config_name" "$BUILD_DIR/.config"
+
 cd $sources_dir
-KBUILD_BUILD_USER=$(git log -1 --format='%ce' | cut -d'@' -f1)
-KBUILD_BUILD_HOST=$(git log -1 --format='%ce' | cut -d'@' -f2)
-KBUILD_BUILD_TIMESTAMP=$(git log -1 --format='%ci')
-SOURCE_DATE_EPOCH=$(git log -1 --format='%ct')
-cd - >/dev/null
 
-# https://tuxmake.org/cli/
-export TUXMAKE="
-  -C '$sources_dir'
-  --runtime null
-  --target-arch arm64
-  --toolchain korg-llvm
-  --compression-type none
-  --kconfig 'config/$config_name'
-  --output-dir '$OUTPUT_DIR'
-  --jobs $(nproc)
-  -e ZERO_AR_DATE=1
-  -e LC_ALL=C
-  -e LC_TIME=C
-  -e TZ=UTC
-  -e KCFLAGS='$KCFLAGS'
-  -e KAFLAGS='$KAFLAGS'
-  -e KBUILD_BUILD_HOST='$KBUILD_BUILD_HOST'
-  -e KBUILD_BUILD_USER='$KBUILD_BUILD_USER'
-  -e KBUILD_BUILD_TIMESTAMP='$KBUILD_BUILD_TIMESTAMP'
-  -e SOURCE_DATE_EPOCH='$SOURCE_DATE_EPOCH'
-  -e KBUILD_BUILD_VERSION=1
-  $extra_args"
+set -- "$@" \
+  O="$BUILD_DIR" \
+  INSTALL_MOD_PATH="$OUTPUT_DIR" \
+  INSTALL_DTBS_PATH="$OUTPUT_DIR/dtbs" \
+  ARCH="$ARCH" \
+  LLVM=1 \
+  KCFLAGS="$KCFLAGS" \
+  KAFLAGS="$KAFLAGS" \
+  SOURCE_DATE_EPOCH="$(git log -1 --format='%ct')" \
+  KBUILD_BUILD_USER="$(git log -1 --format='%ce' | cut -d'@' -f1)" \
+  KBUILD_BUILD_HOST="$(git log -1 --format='%ce' | cut -d'@' -f2)" \
+  KBUILD_BUILD_TIMESTAMP="$(git log -1 --format='%ci')" \
+  KBUILD_BUILD_VERSION=1 \
+  ZERO_AR_DATE=1 \
+  INSTALL_MOD_STRIP="-D --strip-debug"
 
-tuxmake kernel modules dtbs
+if [ -n "$WRAPPER" ]; then
+  set -- "$@" CC="$WRAPPER clang"
+  set -- "$@" AS="$WRAPPER clang"
+fi
+
+make "$@" olddefconfig
+make "$@" "$IMAGE" modules dtbs
+make "$@" dtbs_install modules_install
+
+install "$BUILD_DIR/arch/$ARCH/boot/$IMAGE" "$OUTPUT_DIR/$IMAGE"
