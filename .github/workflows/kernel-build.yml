@@ -56,7 +56,7 @@ jobs:
           path: ${{ env.KERNEL_SRC }}
           repository: zatrit/android_kernel_sdm845_mainline
       - name: Build kernel
-        run: WRAPPER=ccache ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} -j(nproc)
+        run: WRAPPER=ccache ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
       # Post-build stuff
       - uses: actions/upload-artifact@v4
         with:
