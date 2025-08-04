@@ -60,4 +60,5 @@ make "$@" olddefconfig
 make "$@" "$IMAGE" modules dtbs
 make "$@" dtbs_install modules_install
 
-install "$BUILD_DIR/arch/$ARCH/boot/$IMAGE" "$OUTPUT_DIR/$IMAGE"
+cp "$BUILD_DIR/arch/$ARCH/boot/$IMAGE" "$OUTPUT_DIR/$IMAGE"
+cp "$BUILD_DIR/.config" "$OUTPUT_DIR/config"
