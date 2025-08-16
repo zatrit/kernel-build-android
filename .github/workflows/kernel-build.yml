@@ -1,4 +1,4 @@
-name: Build Android kernel
+name: Build kernel
 on:
   workflow_dispatch:
 
@@ -54,13 +54,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.KERNEL_SRC }}
-          repository: zatrit/android_kernel_sdm845_mainline
+          repository: torvalds/linux
+          ref: v6.1
+      - name: Patch kernel
+        run: |
+          cd ${{ env.KERNEL_SRC }}
+          curl -Lf https://www.kernel.org/pub/linux/kernel/v6.x/patch-6.1.148.xz | unxz | git apply -
+          git apply $BUILD_SRC/patches/*.patch
       - name: Build kernel
-        run: WRAPPER=ccache ./build.sh sdm845_defconfig ${{ env.KERNEL_SRC }} -j$(nproc)
+        run: WRAPPER=ccache ./build.sh sun50iw9_defconfig $KERNEL_SRC -j$(nproc)
       # Post-build stuff
       - uses: actions/upload-artifact@v4
         with:
-          name: kernel-sdm845-mainline
+          name: kernel-sun50iw9-mainline
           path: ${{ env.BUILD_SRC }}/out/*
       - name: Clean up ccache
         run: |
