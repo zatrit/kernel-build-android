@@ -60,5 +60,9 @@ make "$@" olddefconfig
 make "$@" "$IMAGE" modules dtbs
 make "$@" dtbs_install modules_install
 
+# Remove source directories
+rm -rf $OUTPUT_DIR/lib/modules/*/source
+rm -rf $OUTPUT_DIR/lib/modules/*/build
+
 cp "$BUILD_DIR/arch/$ARCH/boot/$IMAGE" "$OUTPUT_DIR/$IMAGE"
 cp "$BUILD_DIR/.config" "$OUTPUT_DIR/config"
