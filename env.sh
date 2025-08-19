@@ -9,10 +9,10 @@ error() {
   exit 1
 }
 
-OUTPUT_DIR="$PWD/out"
+OUT_DIR="$PWD/out"
 CONFIG_DIR="$PWD/config"
 TOOLCHAIN_DIR="$PWD/toolchain/"
 LLVM_NAME="llvm-$LLVM_VER-$(uname -m)"
-LLVM_DIR="$TOOLCHAIN_DIR/$LLVM_NAME"
+LLVM_DIR=${LLVM_DIR:-"$TOOLCHAIN_DIR/$LLVM_NAME"}
 
 export PATH="$LLVM_DIR/bin/:$PATH"

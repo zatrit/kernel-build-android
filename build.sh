@@ -3,8 +3,8 @@
 set -e
 . "./env.sh"
 
-if [ ! -d "$LLVM_DIR" ]; then
-  error "ERROR: toolchain is not installed. Use './setup-toolchain.sh'"
+if ! command -v clang >/dev/null 2>&1; then
+  error "ERROR: clang is not installed. Use './setup-toolchain.sh'"
 fi
 
 config_name="$1"
@@ -37,8 +37,8 @@ cd $sources_dir
 
 set -- "$@" \
   O="$BUILD_DIR" \
-  INSTALL_MOD_PATH="$OUTPUT_DIR" \
-  INSTALL_DTBS_PATH="$OUTPUT_DIR/dtbs" \
+  INSTALL_MOD_PATH="$OUT_DIR" \
+  INSTALL_DTBS_PATH="$OUT_DIR/dtbs" \
   ARCH="$ARCH" \
   LLVM=1 \
   KCFLAGS="$KCFLAGS" \
@@ -58,11 +58,12 @@ fi
 
 make "$@" olddefconfig
 make "$@" "$IMAGE" modules dtbs
+make "$@" kernelrelease > "$OUT_DIR/kernelrelease"
 make "$@" dtbs_install modules_install
 
 # Remove source directories
-rm -rf $OUTPUT_DIR/lib/modules/*/source
-rm -rf $OUTPUT_DIR/lib/modules/*/build
+rm -rf $OUT_DIR/lib/modules/*/source
+rm -rf $OUT_DIR/lib/modules/*/build
 
-cp "$BUILD_DIR/arch/$ARCH/boot/$IMAGE" "$OUTPUT_DIR/$IMAGE"
-cp "$BUILD_DIR/.config" "$OUTPUT_DIR/config"
+cp "$BUILD_DIR/arch/$ARCH/boot/$IMAGE" "$OUT_DIR/$IMAGE"
+cp "$BUILD_DIR/.config" "$OUT_DIR/config"
